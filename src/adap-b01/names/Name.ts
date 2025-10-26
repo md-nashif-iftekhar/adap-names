@@ -20,8 +20,12 @@ export class Name {
 
     /** Expects that all Name components are properly masked */
     constructor(other: string[], delimiter?: string) {
-        this.components = [...other];
-        this.delimiter = delimiter ?? DEFAULT_DELIMITER;
+        for (let i = 0; i < other.length; i++) {
+            this.components[i] = other[i];
+        }
+        if (delimiter !== undefined) {
+            this.delimiter = delimiter;
+        }
     }
 
     /**
@@ -30,7 +34,14 @@ export class Name {
      * Users can vary the delimiter character to be used
      */
     public asString(delimiter: string = this.delimiter): string {
-        return this.components.join(delimiter);
+        let result = "";
+        for (let i = 0; i < this.components.length; i++) {
+            result += this.components[i];
+            if (i < this.components.length - 1) {
+                result += delimiter;
+            }
+        }
+        return result;
     }
 
     /** 
@@ -39,18 +50,34 @@ export class Name {
      * The special characters in the data string are the default characters
      */
     public asDataString(): string {
-        return this.components.map(c => this.escapeComponent(c)).join(DEFAULT_DELIMITER);
-    }
-    private escapeComponent(c: string): string {
-        return c
-            .replaceAll(ESCAPE_CHARACTER, ESCAPE_CHARACTER + ESCAPE_CHARACTER)
-            .replaceAll(DEFAULT_DELIMITER, ESCAPE_CHARACTER + DEFAULT_DELIMITER);
+        let result = "";
+        for (let i = 0; i < this.components.length; i++) {
+            const comp = this.components[i];
+            let escapedComponenet = "";
+
+            for (let j = 0; j < comp.length; j++) {
+                const ch = comp[j];
+                if (ch === ESCAPE_CHARACTER || ch === this.delimiter) {
+                    escapedComponenet += ESCAPE_CHARACTER;
+                }
+                escapedComponenet += ch;
+            }
+
+            result += escapedComponenet;
+
+            // Adding btwn components
+            if (i < this.components.length - 1) {
+                result += this.delimiter;
+            }
+        }
+        return result;
     }
 
     /** Returns properly masked component string */
     public getComponent(i: number): string {
         if (i < 0 || i >= this.components.length)
             throw new RangeError("Index out of range");
+
         return this.components[i];
     }
 
@@ -68,20 +95,24 @@ export class Name {
 
     /** Expects that new Name component c is properly masked */
     public insert(i: number, c: string): void {
-        if (i < 0 || i > this.components.length)
-            throw new RangeError("Index out of range");
-        this.components.splice(i, 0, c);
+        for (let j = this.components.length; j > i; j--) {
+            this.components[j] = this.components[j - 1];
+        }
+
+        this.components[i] = c;
     }
 
     /** Expects that new Name component c is properly masked */
     public append(c: string): void {
-        this.components.push(c);
+        this.components[this.components.length] = c;
     }
 
     public remove(i: number): void {
-        if (i < 0 || i >= this.components.length)
-            throw new RangeError("Index out of range");
-        this.components.splice(i, 1);
+        for (let j = i; j < this.components.length - 1; j++) {
+            this.components[j] = this.components[j + 1];
+        }
+
+        this.components.length = this.components.length - 1;
     }
 
 }
