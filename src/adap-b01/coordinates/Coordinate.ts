@@ -45,10 +45,15 @@ export class Coordinate {
     }
 
     public compareDistance(other: Coordinate): number {
-        const thisR = Math.hypot(this.getX(), this.getY());
-        const otherR = Math.hypot(other.getX(), other.getY());
-        if (thisR === otherR) return 0;
-        return thisR < otherR ? -1 : 1;
+        let thisR = Math.hypot(this.getX(), this.getY());
+        let otherR = Math.hypot(this.getX(), this.getY());
+        if (thisR == otherR) {
+            return 0;
+        } else if (thisR < otherR) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 
     public reset(): void {

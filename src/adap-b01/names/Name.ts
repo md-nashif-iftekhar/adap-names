@@ -20,8 +20,8 @@ export class Name {
 
     /** Expects that all Name components are properly masked */
     constructor(other: string[], delimiter?: string) {
-        this.delimiter = delimiter ?? DEFAULT_DELIMITER;
         this.components = [...other];
+        this.delimiter = delimiter ?? DEFAULT_DELIMITER;
     }
 
     /**
@@ -49,14 +49,14 @@ export class Name {
 
     public getComponent(i: number): string {
         if (i < 0 || i >= this.components.length)
-            throw new Error("Index out of range");
+            throw new RangeError("Index out of range");
         return this.components[i];
     }
 
     /** Expects that new Name component c is properly masked */
     public setComponent(i: number, c: string): void {
         if (i < 0 || i >= this.components.length)
-            throw new Error("Index out of range");
+            throw new RangeError("Index out of range");
         this.components[i] = c;
     }
 
@@ -68,7 +68,7 @@ export class Name {
     /** Expects that new Name component c is properly masked */
     public insert(i: number, c: string): void {
         if (i < 0 || i > this.components.length)
-            throw new Error("Index out of range");
+            throw new RangeError("Index out of range");
         this.components.splice(i, 0, c);
     }
 
@@ -79,7 +79,7 @@ export class Name {
 
     public remove(i: number): void {
         if (i < 0 || i >= this.components.length)
-            throw new Error("Index out of range");
+            throw new RangeError("Index out of range");
         this.components.splice(i, 1);
     }
 
