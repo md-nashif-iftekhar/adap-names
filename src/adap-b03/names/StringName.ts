@@ -9,63 +9,111 @@ export class StringName extends AbstractName {
 
     constructor(source: string, delimiter?: string) {
         super();
-        throw new Error("needs implementation or deletion");
+        if (source == null) source = "";
+        this.name = source;
+        const components = AbstractName["parseDataString"](this.name);
+        this.noComponents = components.length;
     }
 
     public clone(): Name {
-        throw new Error("needs implementation or deletion");
+        return new StringName(this.name, this.delimiter);
     }
 
     public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
+        const components = AbstractName["parseDataString"](this.name);
+        return components.join(delimiter);
     }
 
     public asDataString(): string {
-        throw new Error("needs implementation or deletion");
+        const components = AbstractName["parseDataString"](this.name);
+        const escaped = components.map(c => AbstractName["escapeComponent"](c));
+        return escaped.join(DEFAULT_DELIMITER);
     }
 
     public isEqual(other: Name): boolean {
-        throw new Error("needs implementation or deletion");
+        if (other == null || other == undefined) return false;
+        if (this.getNoComponents() !== other.getNoComponents()) return false;
+        for (let i = 0; i < this.getNoComponents(); i++) {
+            if (this.getComponent(i) !== other.getComponent(i)) return false;
+        }
+        return true;
     }
 
     public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
+        let hashCode: number = 0;
+        const s: string = this.asDataString();
+        for (let i: number = 0; i < s.length; i++) {
+            let c: number = s.charCodeAt(i);
+            hashCode = ((hashCode << 5) - hashCode) + c;
+            hashCode = hashCode & hashCode;
+        }
+        return hashCode;
     }
 
     public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
+        return this.noComponents === 0;
     }
 
     public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
+        return this.delimiter;
     }
 
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        const components = AbstractName["parseDataString"](this.name);
+        return components.length;
     }
 
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        const components = AbstractName["parseDataString"](this.name);
+        if (i < 0 || i >= components.length) {
+            throw new RangeError("Component index out of bounds");
+        }
+        return components[i];
     }
 
     public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        const components = AbstractName["parseDataString"](this.name);
+        if (i < 0 || i >= components.length) {
+            throw new RangeError("index out of bounds");
+        }
+        components[i] = c;
+        this.name = components.map(comp => AbstractName["escapeComponent"](comp)).join(DEFAULT_DELIMITER);
+        this.noComponents = components.length;
     }
 
     public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        const components = AbstractName["parseDataString"](this.name);
+        if (i < 0 || i > components.length) {
+            throw new RangeError("index out of bounds");
+        }
+        components.splice(i, 0, c);
+        this.name = components.map(comp => AbstractName["escapeComponent"](comp)).join(DEFAULT_DELIMITER);
+        this.noComponents = components.length;
     }
 
     public append(c: string) {
-        throw new Error("needs implementation or deletion");
+        const components = AbstractName["parseDataString"](this.name);
+        components.push(c);
+        this.name = components.map(comp => AbstractName["escapeComponent"](comp)).join(DEFAULT_DELIMITER);
+        this.noComponents = components.length;
     }
 
     public remove(i: number) {
-        throw new Error("needs implementation or deletion");
+        const components = AbstractName["parseDataString"](this.name);
+        if (i < 0 || i >= components.length) {
+            throw new RangeError("index out of bounds");
+        }
+        components.splice(i, 1);
+        this.name = components.map(comp => AbstractName["escapeComponent"](comp)).join(DEFAULT_DELIMITER);
+        this.noComponents = components.length;
     }
 
     public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
+        const components = AbstractName["parseDataString"](this.name);
+        for (let i = 0; i < other.getNoComponents(); i++) {
+            components.push(other.getComponent(i));
+        }
+        this.name = components.map(comp => AbstractName["escapeComponent"](comp)).join(DEFAULT_DELIMITER);
+        this.noComponents = components.length;
     }
-
 }
