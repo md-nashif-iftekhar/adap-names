@@ -7,63 +7,101 @@ export class StringArrayName extends AbstractName {
     protected components: string[] = [];
 
     constructor(source: string[], delimiter?: string) {
-        super();
-        throw new Error("needs implementation or deletion");
+        super(delimiter ?? DEFAULT_DELIMITER);
+        if (source == null) {
+            this.components = [];
+        } else {
+            this.components = source.slice();
+        }
     }
 
     public clone(): Name {
-        throw new Error("needs implementation or deletion");
+        return new StringArrayName(this.components.slice(), this.getDelimiterCharacter());
     }
 
     public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
+        if (delimiter == null || delimiter.length !==1) {
+            throw new Error("Delimiter must be a single character");
+        }
+        return this.components.join(delimiter);
     }
 
     public asDataString(): string {
-        throw new Error("needs implementation or deletion");
+    return this.components
+        .map(c => {
+            // Escape escape-char AND default delimiter ('.')
+            let escaped = c.split(ESCAPE_CHARACTER)
+                .join(ESCAPE_CHARACTER + ESCAPE_CHARACTER);
+            escaped = escaped.split(DEFAULT_DELIMITER)
+                .join(ESCAPE_CHARACTER + DEFAULT_DELIMITER);
+            return escaped;
+        })
+        .join(DEFAULT_DELIMITER);
     }
 
     public isEqual(other: Name): boolean {
-        throw new Error("needs implementation or deletion");
+        if (other == null) return false;
+        return this.asDataString() === other.asDataString();
     }
 
     public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
+        const s = this.asDataString();
+        let hash = 0;
+        for (let i = 0; i < s.length; i++) {
+            const c = s.charCodeAt(i);
+            hash = (hash << 5) - hash + c;
+            hash |= 0;
+        }
+    return hash;
     }
 
     public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
+        return this.components.length === 0;
     }
 
     public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
+        return this.delimiter;
     }
 
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.components.length;
     }
 
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        if (i < 0 || i >= this.components.length) {
+            throw new Error("Index out of bounds");
+        }
+        return this.components[i];
     }
 
     public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        if (i < 0 || i >= this.components.length) {
+            throw new Error("Index out of bounds");
+        }
+        this.components[i] = c;
     }
 
     public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        if (i < 0 || i > this.components.length) {
+            throw new Error("Index out of bounds");
+        }
+        this.components.splice(i, 0, c);
     }
 
     public append(c: string) {
-        throw new Error("needs implementation or deletion");
+        this.components.push(c);
     }
 
     public remove(i: number) {
-        throw new Error("needs implementation or deletion");
+        if (i < 0 || i >= this.components.length) {
+            throw new Error("Index out of bounds");
+        }
+        this.components.splice(i, 1);
     }
 
     public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
+        for (let i = 0; i < other.getNoComponents(); i++) {
+            this.components.push(other.getComponent(i));
+        }
     }
 }
