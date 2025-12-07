@@ -11,6 +11,7 @@ export abstract class Exception extends Error {
         if (t != undefined) {
             this.trigger = t;
         }
+        Object.setPrototypeOf(this, new.target.prototype);
     }
 
     public hasTrigger(): boolean {
@@ -19,7 +20,10 @@ export abstract class Exception extends Error {
 
     public getTrigger(): Exception {
         // @todo check if trigger is null
-        return this.trigger as Exception;
+        if (this.trigger == null) {
+            throw new Error("exception has no trigger (InvalidStateException)");
+        }
+        return this.trigger;
     }
 
 }
